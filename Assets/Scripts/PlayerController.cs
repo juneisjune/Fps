@@ -74,10 +74,6 @@ public class PlayerController : MonoBehaviour
     }
     private void Crouch()
     {
-        /*      if(isCrouch)
-                  isCrouch = false;
-              else
-                  isCrouch = true;*/
         isCrouch = !isCrouch;
 
         if(isCrouch)
@@ -90,16 +86,27 @@ public class PlayerController : MonoBehaviour
             applySpeed = walkSpeed;
             applyCrouchPosY=originPosY;
         }
-        theCamera.transform.localPosition = new Vector3(theCamera.transform.localPosition.x,applyCrouchPosY,theCamera.transform.localPosition.z);
+        StartCoroutine(CrouchCoroutine());
     }
- /*   IEnumerator CrouchCoroutine()
+    //부드러운 앉기
+    IEnumerator CrouchCoroutine()
     {
-        float _posY=theCamera.transform.localPosition.y;
-        while(_posY!=applyCrouchPosY)
+        float _posY = theCamera.transform.localPosition.y;
+        int count = 0;
+        while (_posY != applyCrouchPosY) 
         {
-            _posY = Mathf.Lerp();
+            _posY = Mathf.Lerp(_posY, applyCrouchPosY, 0.1f);
+            theCamera.transform.localPosition = new Vector3(0, _posY, 0);
+            if (count > 15)
+            {
+                break;
+            }
+          
+            yield return null;  //wait one frame
         }
-    }*/
+        theCamera.transform.localPosition = new Vector3(0, applyCrouchPosY, 0f);
+    }
+    //지면 체크
     private void IsGround()
     {
         isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y+0.1f);
@@ -113,6 +120,10 @@ public class PlayerController : MonoBehaviour
     }
     private void Jump()
     {
+        if(isCrouch) //앉은상태 점프 해제
+        {
+            Crouch();
+        }
         myRigid.velocity = transform.up * jumpForce;
     }
 
@@ -129,7 +140,11 @@ public class PlayerController : MonoBehaviour
     }
     private void Running()
     {
-         isRun = true;
+        if (isCrouch) 
+        {
+            Crouch();
+        }
+        isRun = true;
          applySpeed = runSpeed;
     }
     private void RunningCancel()
