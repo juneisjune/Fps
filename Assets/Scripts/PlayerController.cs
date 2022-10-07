@@ -111,6 +111,7 @@ public class PlayerController : MonoBehaviour
     {
         isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y+0.1f);
     }
+    }
     private void TryJump()
     {
         if(Input.GetKeyDown(KeyCode.Space)&& isGround)
