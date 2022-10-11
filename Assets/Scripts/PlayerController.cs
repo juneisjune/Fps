@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private float jumpForce;
 
     //상태 변수
-    private bool isRun = false;
+    private bool run = false;
     private bool isGround = true;
     private bool isCrouch=false;
 
@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
     private Camera theCamera;
 
     private Rigidbody myRigid;
+    public float rotationSpeed = 360f;
 
 
     // Start is called before the first frame update
@@ -55,8 +56,10 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update() //1초에 60번 정도실행됨
+    void Update() 
     {
+        isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f);
+
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {   /*
             if (isCrouch) //앉은상태 점프 해제
@@ -65,11 +68,50 @@ public class PlayerController : MonoBehaviour
             }*/
             myRigid.velocity = transform.up * jumpForce;
         }
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            this.transform.Translate(Vector3.forward * walkSpeed * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            this.transform.Translate(Vector3.back * walkSpeed * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            this.transform.Translate(Vector3.left * walkSpeed * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            this.transform.Translate(Vector3.right * walkSpeed * Time.deltaTime);
+        }
         if(Input.GetKey(KeyCode.LeftShift))
         {
-            isRun= true;
+            run = true;
             applySpeed = runSpeed;
         }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            run = false;
+            applySpeed = walkSpeed;
+        }
+        //
+        float _yRotation = Input.GetAxisRaw("Mouse X");
+        Vector3 _characterRotationY = new Vector3(0f, _yRotation, 0f) * lookSensitivity;
+        myRigid.MoveRotation(myRigid.rotation * Quaternion.Euler(_characterRotationY));
+        //
+        float _xRotation = Input.GetAxisRaw("Mouse Y");
+        float _cameraRotationX = _xRotation * lookSensitivity; //현재 위치에서 민감도만큼 곱해주기
+        currentCameraRotationX -= _cameraRotationX;
+        currentCameraRotationX = Mathf.Clamp(currentCameraRotationX, -cameraRotationLimit, cameraRotationLimit);//카메라의 최대값과 최소값 유지
+        theCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f);
+
+
+
+
+
+
+
     }
 
 }
