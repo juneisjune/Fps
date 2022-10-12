@@ -237,15 +237,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e932d50abee74874ea48c6384d3aa19c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 10
-  runSpeed: 200
+  walkSpeed: 5
+  runSpeed: 15
   crouchSpeed: 20
-  jumpForce: 5
+  jumpForce: 30
   crouchPosY: 5
   lookSensitivity: 1
   cameraRotationLimit: 45
   theCamera: {fileID: 963194227}
-  rotationSpeed: 360
 --- !u!54 &433749074
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -260,7 +259,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!1 &528145716
 GameObject:

@@ -17,8 +17,8 @@ public class PlayerController : MonoBehaviour
 
     //상태 변수
     private bool run = false;
-    private bool isGround = true;
-    private bool isCrouch=false;
+    private bool Ground = true;
+    private bool Crouch=false;
 
     [SerializeField]
     private float crouchPosY;
@@ -42,8 +42,6 @@ public class PlayerController : MonoBehaviour
     private Camera theCamera;
 
     private Rigidbody myRigid;
-    public float rotationSpeed = 360f;
-
 
     // Start is called before the first frame update
     void Start()//스크립트가 처음 실행 될때
@@ -58,34 +56,33 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update() 
     {
-        isGround = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f);
-
-        if (Input.GetKeyDown(KeyCode.Space) && isGround)
-        {   /*
-            if (isCrouch) //앉은상태 점프 해제
-            {
-                Crouch();
-            }*/
+        //move
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            this.transform.Translate(Vector3.forward * applySpeed * Time.deltaTime);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            this.transform.Translate(Vector3.back * applySpeed * Time.deltaTime);
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            this.transform.Translate(Vector3.left * applySpeed * Time.deltaTime);
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            this.transform.Translate(Vector3.right * applySpeed * Time.deltaTime);
+        }//this 뺴기
+        //jump
+        if (Input.GetKeyDown(KeyCode.Space) && Ground)
+        {
             myRigid.velocity = transform.up * jumpForce;
         }
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            this.transform.Translate(Vector3.forward * walkSpeed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            this.transform.Translate(Vector3.back * walkSpeed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            this.transform.Translate(Vector3.left * walkSpeed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            this.transform.Translate(Vector3.right * walkSpeed * Time.deltaTime);
-        }
-        if(Input.GetKey(KeyCode.LeftShift))
+        //run
+        //명확하게 어떤 작업을 할것인지
+        Ground = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f);
+        print(Ground);
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             run = true;
             applySpeed = runSpeed;
@@ -95,22 +92,31 @@ public class PlayerController : MonoBehaviour
             run = false;
             applySpeed = walkSpeed;
         }
+        //crouch
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            Crouch = !Crouch;
+            if(Crouch)
+            {
+                applySpeed = crouchSpeed;
+                applyCrouchPosY = crouchPosY;
+            }
+            else
+            {
+                applySpeed = walkSpeed;
+                applyCrouchPosY = originPosY;
+            }
+        }
         //
-        float _yRotation = Input.GetAxisRaw("Mouse X");
-        Vector3 _characterRotationY = new Vector3(0f, _yRotation, 0f) * lookSensitivity;
-        myRigid.MoveRotation(myRigid.rotation * Quaternion.Euler(_characterRotationY));
-        //
-        float _xRotation = Input.GetAxisRaw("Mouse Y");
-        float _cameraRotationX = _xRotation * lookSensitivity; //현재 위치에서 민감도만큼 곱해주기
-        currentCameraRotationX -= _cameraRotationX;
-        currentCameraRotationX = Mathf.Clamp(currentCameraRotationX, -cameraRotationLimit, cameraRotationLimit);//카메라의 최대값과 최소값 유지
-        theCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f);
+        
+       
+      
+/*        //
+        float yRotate = Input.GetAxisRaw("Mouse X");
+        float cameraRotateY = yRotate * lookSensitivity;
+        Vector3 charRotateY = new Vector3(0f, _yRotate, 0f);
 
-
-
-
-
-
+        float xRotation = Input.GetAxisRaw("Mouse Y");*/
 
     }
 
