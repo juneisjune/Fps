@@ -240,7 +240,7 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 15
   crouchSpeed: 20
-  jumpForce: 30
+  jumpForce: 5
   crouchPosY: 5
   lookSensitivity: 1
   cameraRotationLimit: 45
