@@ -303,7 +303,7 @@ MonoBehaviour:
   crouchSpeed: 20
   jumpForce: 5
   crouchPosY: 5
-  lookSensitivity: 1
+  lookSensitivity: 5
   rotationLimit: 0
   theCamera: {fileID: 963194227}
 --- !u!54 &433749074

@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     //카메라 각도 제한 
     [SerializeField]
     private float rotationLimit;
-    private float currentCameraRotationX = 0f;
+    private float currentCameraRotationY = 0f;
     
 
     //기타 컴포넌트
@@ -113,16 +113,14 @@ public class PlayerController : MonoBehaviour
 
         //상하
         float yRotation = Input.GetAxisRaw("Mouse Y"); 
-        float cameraRotationX = yRotation * lookSensitivity; //현재 위치에서 민감도만큼 곱해주기
-        //currentCameraRotationX -= cameraRotationX;
-        currentCameraRotationX = Mathf.Clamp(currentCameraRotationX, -rotationLimit, rotationLimit);
-        theCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f);
+        float cameraRotationY = yRotation * lookSensitivity; //현재 위치에서 민감도만큼 곱해주기
+        currentCameraRotationY = Mathf.Clamp(cameraRotationY, -rotationLimit, rotationLimit);
+        theCamera.transform.localEulerAngles = new Vector3(currentCameraRotationY, 0f, 0f);
         
         //좌우
         float xRotation = Input.GetAxisRaw("Mouse X");
         Vector3 characterRotationX = new Vector3(0f, xRotation, 0f) * lookSensitivity;
         myRigid.MoveRotation(myRigid.rotation * Quaternion.Euler(characterRotationX));
-
     }
 
 }
