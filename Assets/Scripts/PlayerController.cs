@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    //½ºÇÇµå Á¶Á¤ º¯¼ö
-    [SerializeField] //privateÀ¸·Î ÇØµµ ¼öÁ¤ °¡´ÉÇÔ
+    //ìŠ¤í”¼ë“œ ì¡°ì • ë³€ìˆ˜
+    [SerializeField] //privateìœ¼ë¡œ í•´ë„ ìˆ˜ì • ê°€ëŠ¥í•¨
     private float walkSpeed;
     [SerializeField]
     private float runSpeed;
@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float jumpForce;
 
-    //»óÅÂ º¯¼ö
+    //ìƒíƒœ ë³€ìˆ˜
     private bool run = false;
     private bool Ground = true;
     private bool Crouch=false;
@@ -27,25 +27,25 @@ public class PlayerController : MonoBehaviour
 
     private CapsuleCollider capsuleCollider;
 
-    //¹Î°¨µµ
+    //ë¯¼ê°ë„
     [SerializeField]
     private float lookSensitivity;
 
 
-    //Ä«¸Ş¶ó °¢µµ Á¦ÇÑ 
+    //ì¹´ë©”ë¼ ê°ë„ ì œí•œ 
     [SerializeField]
     private float rotationLimit;
     private float currentCameraRotationY = 0f;
     
 
-    //±âÅ¸ ÄÄÆ÷³ÍÆ®
+    //ê¸°íƒ€ ì»´í¬ë„ŒíŠ¸
     [SerializeField]
     private Camera theCamera;
 
     private Rigidbody myRigid;
 
     // Start is called before the first frame update
-    void Start()//½ºÅ©¸³Æ®°¡ Ã³À½ ½ÇÇà µÉ¶§
+    void Start()//ìŠ¤í¬ë¦½íŠ¸ê°€ ì²˜ìŒ ì‹¤í–‰ ë ë•Œ
     {
         capsuleCollider = GetComponent<CapsuleCollider>();
         myRigid = GetComponent<Rigidbody>();
@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.D))
         {
             this.transform.Translate(Vector3.right * applySpeed * Time.deltaTime);
-        }//this •û±â
+        }//this ëº´ê¸°
         //jump
         if (Input.GetKey(KeyCode.Space) && Ground)
         {
@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
             }
         }
         //run
-        //¸íÈ®ÇÏ°Ô ¾î¶² ÀÛ¾÷À» ÇÒ°ÍÀÎÁö
+        //ëª…í™•í•˜ê²Œ ì–´ë–¤ ì‘ì—…ì„ í• ê²ƒì¸ì§€
         Ground = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f);
         
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -111,13 +111,13 @@ public class PlayerController : MonoBehaviour
         
 
 
-        //»óÇÏ
+        //ìƒí•˜
         float yRotation = Input.GetAxisRaw("Mouse Y"); 
-        float cameraRotationY = yRotation * lookSensitivity; //ÇöÀç À§Ä¡¿¡¼­ ¹Î°¨µµ¸¸Å­ °öÇØÁÖ±â
+        float cameraRotationY = yRotation * lookSensitivity; //í˜„ì¬ ìœ„ì¹˜ì—ì„œ ë¯¼ê°ë„ë§Œí¼ ê³±í•´ì£¼ê¸°
         currentCameraRotationY = Mathf.Clamp(cameraRotationY, -rotationLimit, rotationLimit);
         theCamera.transform.localEulerAngles = new Vector3(currentCameraRotationY, 0f, 0f);
         
-        //ÁÂ¿ì
+        //ì¢Œìš°
         float xRotation = Input.GetAxisRaw("Mouse X");
         Vector3 characterRotationX = new Vector3(0f, xRotation, 0f) * lookSensitivity;
         myRigid.MoveRotation(myRigid.rotation * Quaternion.Euler(characterRotationX));
