@@ -75,7 +75,7 @@ public class GunController : MonoBehaviour
             else
             {
                 StopAllCoroutines();
-                StartCoroutine(DeactivateFineSightCoroutine());
+                StartCoroutine(FineSightDeactivateCoroutine());
             }
         }
        //r 키 reload bullet
@@ -86,7 +86,7 @@ public class GunController : MonoBehaviour
         }
         GunFireRateCalc();
     }
-    private void Hit()
+    private void Hit() // 상하에 영향 없음
     {
         if (Physics.Raycast(theCam.transform.position, theCam.transform.forward, out hitInfo, currentGun.range))
         {
@@ -123,18 +123,12 @@ public class GunController : MonoBehaviour
 
     }
 
-
-
     private void GunFireRateCalc()
     {
         if (currentFireRate > 0)
             currentFireRate -= Time.deltaTime;
     }
 
-
-    
-
-   
     IEnumerator ReloadCoroutine()
     {
         if (currentGun.carryBulletCount > 0)
@@ -167,7 +161,6 @@ public class GunController : MonoBehaviour
     }
 
   
-  
     //합쳐보기
     IEnumerator FineSightActivateCoroutine()
     {
@@ -187,8 +180,6 @@ public class GunController : MonoBehaviour
         }
     }
     
-
-  
     public Gun GetGun()
     {
         return currentGun;

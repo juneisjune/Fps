@@ -16,9 +16,13 @@ public class PlayerController : MonoBehaviour
     private float jumpForce;
 
     //상태 변수
+    private bool isWalk=false;
     private bool run = false;
     private bool Ground = true;
     private bool Crouch=false;
+
+    //움직임 체크 변수
+    private Vector3 lastPos;
 
     [SerializeField]
     private float crouchPosY;
@@ -34,21 +38,23 @@ public class PlayerController : MonoBehaviour
 
     //카메라 각도 제한 
     [SerializeField]
-    private float rotationLimit;
-    private float currentCameraRotationY = 0f;
-    
+    private float cameraRotationLimit;
+    private float currentCameraRotationX = 0;
+
 
     //기타 컴포넌트
     [SerializeField]
     private Camera theCamera;
-
     private Rigidbody myRigid;
+    private Crosshair theCrossHair;
 
     // Start is called before the first frame update
     void Start()//스크립트가 처음 실행 될때
     {
         capsuleCollider = GetComponent<CapsuleCollider>();
         myRigid = GetComponent<Rigidbody>();
+        theCrossHair = FindObjectOfType<Crosshair>();
+
         applySpeed = walkSpeed;
         originPosY = theCamera.transform.localPosition.y;
         applyCrouchPosY = originPosY;
@@ -57,6 +63,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update() 
     {
+        MoveCheck();
+        CharacterRotation();
+        CameraRotation();
         //move
         if (Input.GetKey(KeyCode.W))
         {
@@ -74,15 +83,20 @@ public class PlayerController : MonoBehaviour
         {
             this.transform.Translate(Vector3.right * applySpeed * Time.deltaTime);
         }//this 뺴기
-        //jump
-        if (Input.GetKey(KeyCode.Space) && Ground)
+         //jump
+
+        if (Input.GetKey(KeyCode.Space))
         {
+            print("space 눌러짐");
             myRigid.velocity = transform.up * jumpForce;
         }
+
         //crouch
         if (Input.GetKey(KeyCode.LeftControl))
         {
-            Crouch = !Crouch;
+            //Crouch = !Crouch;
+            theCrossHair.CrouchingAnimation(run);
+
             if (Crouch)
             {
                 applySpeed = crouchSpeed;
@@ -102,25 +116,54 @@ public class PlayerController : MonoBehaviour
         {
             run = true;
             applySpeed = runSpeed;
+            theCrossHair.RunningAnimation(run);
         }
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             run = false;
+            theCrossHair.RunningAnimation(run);
+
             applySpeed = walkSpeed;
         }
-        
+    }
 
+    private void MoveCheck()
+    {
+        if(!run && !Crouch )
+        {
+            if (Vector3.Distance(lastPos,transform.position)>=0.01f) //전프레임과 현제 프레임 위치 값이 0.01보다 작으면 안겆는것
+                isWalk = true;
+            else
+                isWalk = false;
 
-        //상하
-        float yRotation = Input.GetAxisRaw("Mouse Y"); 
-        float cameraRotationY = yRotation * lookSensitivity; //현재 위치에서 민감도만큼 곱해주기
-        currentCameraRotationY = Mathf.Clamp(cameraRotationY, -rotationLimit, rotationLimit);
-        theCamera.transform.localEulerAngles = new Vector3(currentCameraRotationY, 0f, 0f);
+            theCrossHair.WalkingAnimation(isWalk);
+
+            lastPos = transform.position;
+        }
         
-        //좌우
-        float xRotation = Input.GetAxisRaw("Mouse X");
-        Vector3 characterRotationX = new Vector3(0f, xRotation, 0f) * lookSensitivity;
-        myRigid.MoveRotation(myRigid.rotation * Quaternion.Euler(characterRotationX));
+    }
+    private void CharacterRotation() 
+    {
+        // 좌우 캐릭터 회전
+        print("좌우");
+        float _yRotation = Input.GetAxisRaw("Mouse X");
+        Vector3 _characterRotationY = new Vector3(0f, _yRotation, 0f) * lookSensitivity*5;
+        myRigid.MoveRotation(myRigid.rotation * Quaternion.Euler(_characterRotationY));
+        Debug.Log(myRigid.rotation);
+        Debug.Log(myRigid.rotation.eulerAngles);
+    }
+
+    private void CameraRotation()
+        
+    {
+        print("상하");
+        // 상하 카메라 회전
+        float _xRotation = Input.GetAxisRaw("Mouse Y");
+        float _cameraRotationX = _xRotation * lookSensitivity;
+        currentCameraRotationX -= _cameraRotationX;
+        currentCameraRotationX = Mathf.Clamp(currentCameraRotationX, -cameraRotationLimit, cameraRotationLimit);
+        theCamera.transform.localEulerAngles = new Vector3(currentCameraRotationX, 0f, 0f);
     }
 
 }
+
