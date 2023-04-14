@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     private bool isWalk=false;
     private bool run = false;
     private bool Ground = true;
-    private bool Crouch=false;
+    private bool isCrouch=false;
 
     //움직임 체크 변수
     private Vector3 lastPos;
@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour
     void Update() 
     {
         MoveCheck();
+        TryCrouch();
         CharacterRotation();
         CameraRotation();
         //move
@@ -92,9 +93,9 @@ public class PlayerController : MonoBehaviour
         }
 
         //crouch
-        if (Input.GetKey(KeyCode.LeftControl))
+ /*       if (Input.GetKeydown(KeyCode.LeftControl))
         {
-            //Crouch = !Crouch;
+            Crouch = !Crouch;
             theCrossHair.CrouchingAnimation(run);
 
             if (Crouch)
@@ -107,7 +108,7 @@ public class PlayerController : MonoBehaviour
                 applySpeed = walkSpeed;
                 applyCrouchPosY = originPosY;
             }
-        }
+        }*/
         //run
         //명확하게 어떤 작업을 할것인지
         Ground = Physics.Raycast(transform.position, Vector3.down, capsuleCollider.bounds.extents.y + 0.1f);
@@ -126,10 +127,51 @@ public class PlayerController : MonoBehaviour
             applySpeed = walkSpeed;
         }
     }
+    private void TryCrouch()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            Crouch();
+        }
+    }
+    private void Crouch()
+    {
+        isCrouch = !isCrouch;
 
+        if (isCrouch)
+        {
+            applySpeed = crouchSpeed;
+            applyCrouchPosY = crouchPosY;
+        }
+        else
+        {
+            applySpeed = walkSpeed;
+            applyCrouchPosY = originPosY;
+        }
+        
+        StartCoroutine(CrouchCoroutine());
+
+    }
+    IEnumerator CrouchCoroutine()
+    {
+
+        float _posY = theCamera.transform.localPosition.y;
+        int count = 0;
+
+        while (_posY != applyCrouchPosY)
+        {
+            count++;
+            _posY = Mathf.Lerp(_posY, applyCrouchPosY, 0.3f);
+            theCamera.transform.localPosition = new Vector3(0, _posY, 0);
+            if (count > 15)
+                break;
+            yield return null;
+        }
+        theCamera.transform.localPosition = new Vector3(0, applyCrouchPosY, 0f);
+    }
     private void MoveCheck()
     {
-        if(!run && !Crouch )
+        if(!run && !isCrouch )
         {
             if (Vector3.Distance(lastPos,transform.position)>=0.01f) //전프레임과 현제 프레임 위치 값이 0.01보다 작으면 안겆는것
                 isWalk = true;
@@ -147,7 +189,7 @@ public class PlayerController : MonoBehaviour
         // 좌우 캐릭터 회전
         print("좌우");
         float _yRotation = Input.GetAxisRaw("Mouse X");
-        Vector3 _characterRotationY = new Vector3(0f, _yRotation, 0f) * lookSensitivity*5;
+        Vector3 _characterRotationY = new Vector3(0f, _yRotation, 0f) * lookSensitivity;
         myRigid.MoveRotation(myRigid.rotation * Quaternion.Euler(_characterRotationY));
         Debug.Log(myRigid.rotation);
         Debug.Log(myRigid.rotation.eulerAngles);

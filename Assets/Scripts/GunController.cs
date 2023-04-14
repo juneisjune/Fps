@@ -61,7 +61,7 @@ public class GunController : MonoBehaviour
                 }
             }
         }
-       //오른쪽 마우스 정조준
+        //오른쪽 마우스 정조준
         if (Input.GetButtonDown("Fire2") && !isReload)
         {
             isFineSightMode = !isFineSightMode;
